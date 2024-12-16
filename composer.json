@@ -26,6 +26,7 @@
     "handle": "control-panel-element-counter",
     "name": "Control Panel Element Counter",
     "developer": "IWF",
+    "developerUrl": "https://www.iwf.ch/web-solutions",
     "documentationUrl": "https://github.com/iwf-web/craft-cp-element-counter",
     "class": "cpelementcounter\\CpElementCounter"
   },
