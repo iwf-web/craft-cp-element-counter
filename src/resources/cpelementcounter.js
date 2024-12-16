@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (urlInUsers && hasGroups) {
         getUsersCount();
     }
-    if (urlInAssets.length && hasFolders) {
+    if (urlInAssets && hasFolders) {
         getAssetsCount();
     }
 
@@ -129,9 +129,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     function getSectionUids() {
         var uids = [];
 
-        $('#main-content.has-sidebar .sidebar li a[data-key]').each(function () {
-            if ($(this).data('key').match(/section:/)) {
-                uids.push($(this).data('key').replace('section:', ''));
+        let elements = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]');
+        elements.forEach(function(element) {
+            let key = element.getAttribute('data-key');
+            if (key.match(/section:/)) {
+                uids.push(key.replace('section:', ''));
             }
         });
 
@@ -141,9 +143,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     function getGroupUids() {
         var uids = [];
 
-        $('#main-content.has-sidebar .sidebar li a[data-key]').each(function () {
-            if ($(this).data('key').match(/group:/)) {
-                uids.push($(this).data('key').replace('group:', ''));
+        let elements = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]');
+        elements.forEach(function(element) {
+            let key = element.getAttribute('data-key');
+            if (key.match(/group:/)) {
+                uids.push(key.replace('group:', ''));
             }
         });
 
@@ -154,10 +158,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     function getFolders() {
         var folders = [];
 
-        $('#main-content.has-sidebar .sidebar li a[data-folder-id]').each(function () {
-            var folderKeys = $(this).data('folder-id');
+        let elements = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-folder-id]');
+        elements.forEach(function(element) {
+            let folderKeys = element.getAttribute('data-folder-id');
             folders.push(folderKeys);
-
         });
 
         return folders;
