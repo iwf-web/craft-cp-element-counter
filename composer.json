@@ -1,0 +1,47 @@
+{
+  "name": "iwf/craft-control-panel-element-counter",
+  "description": "Control Panel Element Counter",
+  "type": "craft-plugin",
+  "license": "mit",
+  "support": {
+    "email": "s.friedrich@iwf.ch",
+    "issues": "https://github.com/iwf-web/craft-cp-element-counter/issues?state=open",
+    "source": "https://github.com/iwf-web/craft-cp-element-counter",
+    "docs": "https://github.com/iwf-web/craft-cp-element-counter",
+    "rss": "https://github.com/iwf-web/craft-cp-element-counter/releases.atom"
+  },
+  "require": {
+    "php": ">=8.2",
+    "craftcms/cms": "^5.0.0"
+  },
+  "require-dev": {
+    "craftcms/ecs": "dev-main"
+  },
+  "autoload": {
+    "psr-4": {
+      "cpelementcounter\\": "src/"
+    }
+  },
+  "extra": {
+    "handle": "control-panel-element-counter",
+    "name": "Control Panel Element Counter",
+    "developer": "IWF",
+    "documentationUrl": "https://github.com/iwf-web/craft-cp-element-counter",
+    "class": "cpelementcounter\\CpElementCounter"
+  },
+  "scripts": {
+    "check-cs": "ecs check --ansi",
+    "fix-cs": "ecs check --ansi --fix",
+    "phpstan": "phpstan --memory-limit=1G"
+  },
+  "config": {
+    "sort-packages": true,
+    "platform": {
+      "php": "8.2"
+    },
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
+  }
+}
