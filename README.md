@@ -1,6 +1,6 @@
-# Control Panel Element Counter
+# Control Panel Element Counter plugin for Craft CMS 5.x
 
-Control Panel Element Counter
+This plugin brings back the CP Element Count plugin, yeah!
 
 ## Requirements
 
@@ -28,3 +28,5 @@ composer require iwf/craft-control-panel-element-counter
 # tell Craft to install the plugin
 ./craft plugin/install control-panel-element-counter
 ```
+
+Brought to you by [IWF](https://www.iwf.ch/web-solutions) with a big thank you to [André Elvan](https://www.vaersaagod.no/) for the original plugin.
