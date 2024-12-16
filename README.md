@@ -2,6 +2,10 @@
 
 This plugin brings back the CP Element Count plugin, yeah!
 
+Plugin shows you the number of elements - Entries, Assets, Categories and Users directly in the control panel.
+
+![Screenshot](resources/screenshot.png)
+
 ## Requirements
 
 This plugin requires Craft CMS 5.0.0 or later, and PHP 8.2 or later.
