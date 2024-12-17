@@ -1,10 +1,10 @@
 <?php
 
 /**
- * CP Element Counter plugin for Craft CMS 3.x
+ * CP Element Counter plugin for Craft CMS 5.x
  *
- * @link      https://www.vaersaagod.no/
- * @copyright Copyright (c) 2018 André Elvan
+ * @link      https://www.iwf.ch/web-solutions
+ * @copyright Copyright (c) 2024 Stefan Friedrich
  */
 
 namespace cpelementcounter\services;
@@ -21,7 +21,7 @@ use craft\services\UserGroups;
 /**
  * CpElementCounterService Service
  *
- * @author    André Elvan
+ * @author    Stefan Friedrich
  * @package   CpElementCounter
  * @since     1.0.0
  */
