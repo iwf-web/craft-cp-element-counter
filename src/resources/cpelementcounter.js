@@ -6,15 +6,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     var urlInAssets = href.match(/\/assets/);
 
     let hasSections = Array.from(document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]')).filter(function (element) {
-        return element.getAttribute('data-key').match(/section:\d+/);
+        return element.getAttribute('data-key').match(/section:\w+/);
     }).length > 0;
 
     let hasGroups = Array.from(document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]')).filter(function (element) {
-        return element.getAttribute('data-key').match(/group:\d+/);
+        return element.getAttribute('data-key').match(/group:\w+/);
     }).length > 0;
 
     let hasFolders = Array.from(document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]')).filter(function (element) {
-        return element.getAttribute('data-key').match(/volume:/);
+        return element.getAttribute('data-key').match(/volume:\w+/);
     }).length > 0;
 
     if (hasSections) {
