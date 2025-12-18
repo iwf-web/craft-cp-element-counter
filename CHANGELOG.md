@@ -1,5 +1,8 @@
 # Release Notes for Control Panel Element Counter
 
+## 5.0.5
+- Fixed version number, again
+
 ## 5.0.4
 - Fixed calculation of entry-counts for multisites
 - Happy holidays!
