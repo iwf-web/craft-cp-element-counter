@@ -1,11 +1,17 @@
 # Release Notes for Control Panel Element Counter
 
+## 5.0.6 - 2025-12-18
+- Fixed changelog
+
+### Fixed
+- Fixed calculation of entry-counts for multisites
+- Happy holidays!
+
 ## 5.0.5
 - Fixed version number, again
 
 ## 5.0.4
 - Fixed calculation of entry-counts for multisites
-- Happy holidays!
 
 ## 5.0.3
 - Fixed recognition of group ids for categories
