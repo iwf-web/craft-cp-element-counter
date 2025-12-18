@@ -1,5 +1,9 @@
 # Release Notes for Control Panel Element Counter
 
+## 5.0.4
+- Fixed calculation of entry-counts for multisites
+- Happy holidays!
+
 ## 5.0.3
 - Fixed recognition of group ids for categories
 

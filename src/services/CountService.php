@@ -36,9 +36,12 @@ class CountService extends Component
         $r = [];
         $totalCount = 0;
 
+        $currentSiteHandle = Craft::$app->request->getParam('site');
+        $site = Craft::$app->sites->getSiteByHandle($currentSiteHandle, true);
+
         foreach ($uids as $uid) {
             $section = Craft::$app->getEntries()->getSectionByUid($uid);
-            $count = Entry::find()->sectionId($section->id)->limit(null)->status(['disabled', 'enabled'])->count();
+            $count = Entry::find()->sectionId($section->id)->siteId($site->id)->limit(null)->status(['disabled', 'enabled'])->count();
             $r[$uid] = $count;
             $totalCount = $totalCount + $count;
         }
