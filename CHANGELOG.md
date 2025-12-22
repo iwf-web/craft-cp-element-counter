@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.8](https://github.com/iwf-web/craft-cp-element-counter/compare/5.0.7...5.0.8) - 2025-12-22
+
+
+### 🐛 Bug Fixes
+
+* Don't include resources in composer install ([24182fa](https://github.com/iwf-web/craft-cp-element-counter/commit/24182fa0a2415634a674bf4a9206de4227d3c1a1))
+
 ## [5.0.7](https://github.com/iwf-web/craft-cp-element-counter/compare/5.0.6...5.0.7) - 2025-12-22
 
 
