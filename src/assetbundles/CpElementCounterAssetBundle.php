@@ -1,10 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- * CP Element Counter plugin for Craft CMS 5.x
+ * CP Element Counter plugin
  *
- * @link      https://www.iwf.ch/web-solutions
- * @copyright Copyright (c) 2024 Stefan Friedrich
+ * @package   CraftCPElementCounter
+ * @author    IWF Web Solutions <web-solutions@iwf.ch>
+ * @copyright Copyright (c) 2024-2025 IWF Web Solutions <web-solutions@iwf.ch>
+ * @license   https://github.com/iwf-web/craft-cp-element-counter/blob/main/LICENSE.txt MIT License
+ * @link      https://github.com/iwf-web/craft-cp-element-counter
  */
 
 namespace cpelementcounter\assetbundles;
@@ -14,8 +17,7 @@ use craft\web\assets\cp\CpAsset;
 
 class CpElementCounterAssetBundle extends AssetBundle
 {
-
-    public function init()
+    public function init(): void
     {
         $this->sourcePath = '@cpelementcounter/resources';
 

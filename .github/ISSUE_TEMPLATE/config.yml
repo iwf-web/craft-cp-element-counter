@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Community Support
+    url: https://github.com/iwf-web/craft-cp-element-counter/discussions
+    about: Please ask and answer questions here.

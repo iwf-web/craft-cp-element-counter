@@ -1,0 +1,50 @@
+name: Bug report 🐛
+description: Existing feature does not behave as expected.
+labels: [kind/bug, status/to verify]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before reporting a bug, make sure you are up-to-date and the problem is/was not reported already.
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Problem description
+      description:
+        Please describe encountered problem and provide the background of it
+        maybe including contextual information and images.
+    validations:
+      required: true
+  - type: textarea
+    id: to-reproduce
+    attributes:
+      label: To reproduce
+      description: |
+        Steps to reproduce the behavior:
+
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+
+        Please use markdown syntax for each code snippet.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Provide the action version in X.Y.Z format
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Contribution Checks
+      options:
+        - label: I have verified if this problem was already reported
+          required: false
+        - label:
+            I am familiar with ["Feature or
+            bug?"](https://github.com/iwf-web/craft-cp-element-counter/blob/master/.github/feature-or-bug.md)
+          required: false

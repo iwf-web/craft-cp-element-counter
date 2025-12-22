@@ -1,80 +1,75 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- * CP Element Counter plugin for Craft CMS 5.x
+ * CP Element Counter plugin
  *
- * @link      https://www.iwf.ch/web-solutions
- * @copyright Copyright (c) 2024 Stefan Friedrich
+ * @package   CraftCPElementCounter
+ * @author    IWF Web Solutions <web-solutions@iwf.ch>
+ * @copyright Copyright (c) 2024-2025 IWF Web Solutions <web-solutions@iwf.ch>
+ * @license   https://github.com/iwf-web/craft-cp-element-counter/blob/main/LICENSE.txt MIT License
+ * @link      https://github.com/iwf-web/craft-cp-element-counter
  */
 
 namespace cpelementcounter\controllers;
 
-use Craft;
-use craft\elements\Asset;
-use craft\web\Controller;
-
 use cpelementcounter\CpElementCounter as Plugin;
+use craft\web\Controller;
+use yii\web\Response;
 
-/**
- * Class CountController
- *
- * @package cpelementcounter\controllers
- */
 class CountController extends Controller
 {
-
     // Protected Properties
     // =========================================================================
 
     /**
      * @var array
      */
-    protected int|bool|array $allowAnonymous = true;
+    protected array|bool|int $allowAnonymous = true;
 
     // Public Methods
     // =========================================================================
 
-    public function actionGetEntriesCount(): \yii\web\Response
+    public function actionGetEntriesCount(): Response
     {
         $config = Plugin::$plugin->getSettings();
-        $request = Craft::$app->getRequest();
+        $request = \Craft::$app->getRequest();
         $uids = $request->getParam('uids', []);
-        
+
         $counts = Plugin::$plugin->count->getEntriesCount($uids);
-        
+
         return $this->asJson($counts);
     }
 
-    public function actionGetCategoriesCount(): \yii\web\Response
+    public function actionGetCategoriesCount(): Response
     {
         $config = Plugin::$plugin->getSettings();
-        $request = Craft::$app->getRequest();
+        $request = \Craft::$app->getRequest();
         $uids = $request->getParam('uids', []);
-        
+
         $counts = Plugin::$plugin->count->getCategoriesCount($uids);
-        
+
         return $this->asJson($counts);
     }
 
-    public function actionGetUsersCount(): \yii\web\Response
+    public function actionGetUsersCount(): Response
     {
         $config = Plugin::$plugin->getSettings();
-        $request = Craft::$app->getRequest();
+        $request = \Craft::$app->getRequest();
         $uids = $request->getParam('uids', []);
-        
+
         $counts = Plugin::$plugin->count->getUsersCount($uids);
-        
+
         return $this->asJson($counts);
     }
 
-    public function actionGetAssetsCount(): \yii\web\Response
+    public function actionGetAssetsCount(): Response
     {
         $config = Plugin::$plugin->getSettings();
-        $request = Craft::$app->getRequest();
+        $request = \Craft::$app->getRequest();
         $folders = $request->getParam('folders', []);
-        
+
         $counts = Plugin::$plugin->count->getAssetsCount($folders);
-        
+
         return $this->asJson($counts);
     }
 }

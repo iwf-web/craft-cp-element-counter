@@ -1,0 +1,17 @@
+# Created by https://www.richie-bendall.ml/gitattributes-generator/
+# End of https://www.richie-bendall.ml/gitattributes-generator/
+
+# This is what is relevant for composer installs
+.devcontainer export-ignore
+.github export-ignore
+.vscode export-ignore
+.editorconfig export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
+CODEOWNERS export-ignore
+*.md export-ignore
+*.dist.php export-ignore
+*.neon export-ignore
+*release*.json export-ignore
+README.md -export-ignore export-subst
+CHANGELOG.md -export-ignore export-subst

@@ -1,0 +1,11 @@
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: '**/*.md'
+
+feature:
+  - head-branch: ['^feature', 'feature']
+
+release:
+  - all:
+    - base-branch: 'main'
+    - head-branch: ['^release', 'release']

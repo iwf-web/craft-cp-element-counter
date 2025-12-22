@@ -1,0 +1,103 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to static property \$app on an unknown class Craft\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/CpElementCounter.php
+
+		-
+			message: '#^Call to static method error\(\) on an unknown class Craft\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CpElementCounter.php
+
+		-
+			message: '#^Call to static method setAlias\(\) on an unknown class Craft\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/CpElementCounter.php
+
+		-
+			message: '#^Method cpelementcounter\\assetbundles\\CpElementCounterAssetBundle\:\:init\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/assetbundles/CpElementCounterAssetBundle.php
+
+		-
+			message: '#^Access to an undefined property cpelementcounter\\CpElementCounter\:\:\$count\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/controllers/CountController.php
+
+		-
+			message: '#^Access to static property \$app on an unknown class Craft\.$#'
+			identifier: class.notFound
+			count: 4
+			path: src/controllers/CountController.php
+
+		-
+			message: '#^PHPDoc type array\|bool\|int of property cpelementcounter\\controllers\\CountController\:\:\$allowAnonymous is not covariant with PHPDoc type array\<int\|string\>\|bool\|int of overridden property craft\\web\\Controller\:\:\$allowAnonymous\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/controllers/CountController.php
+
+		-
+			message: '#^Property cpelementcounter\\controllers\\CountController\:\:\$allowAnonymous type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/controllers/CountController.php
+
+		-
+			message: '#^Access to static property \$app on an unknown class Craft\.$#'
+			identifier: class.notFound
+			count: 5
+			path: src/services/CountService.php
+
+		-
+			message: '#^Method cpelementcounter\\services\\CountService\:\:getAssetsCount\(\) has parameter \$folders with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/services/CountService.php
+
+		-
+			message: '#^Method cpelementcounter\\services\\CountService\:\:getAssetsCount\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/services/CountService.php
+
+		-
+			message: '#^Method cpelementcounter\\services\\CountService\:\:getCategoriesCount\(\) has parameter \$uids with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/services/CountService.php
+
+		-
+			message: '#^Method cpelementcounter\\services\\CountService\:\:getCategoriesCount\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/services/CountService.php
+
+		-
+			message: '#^Method cpelementcounter\\services\\CountService\:\:getEntriesCount\(\) has parameter \$uids with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/services/CountService.php
+
+		-
+			message: '#^Method cpelementcounter\\services\\CountService\:\:getEntriesCount\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/services/CountService.php
+
+		-
+			message: '#^Method cpelementcounter\\services\\CountService\:\:getUsersCount\(\) has parameter \$uids with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/services/CountService.php
+
+		-
+			message: '#^Method cpelementcounter\\services\\CountService\:\:getUsersCount\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/services/CountService.php
