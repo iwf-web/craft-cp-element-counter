@@ -5,6 +5,7 @@
 .devcontainer export-ignore
 .github export-ignore
 .vscode export-ignore
+/resources export-ignore
 .editorconfig export-ignore
 .gitignore export-ignore
 .gitattributes export-ignore
