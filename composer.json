@@ -70,6 +70,7 @@
             ".devcontainer",
             ".github",
             ".vscode",
+            "/resources",
             ".editorconfig",
             ".gitignore",
             ".gitattributes",

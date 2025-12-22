@@ -6,7 +6,7 @@ This plugin brings back the CP Element Count plugin, yeah!
 
 Plugin shows you the number of elements - Entries, Assets, Categories and Users directly in the control panel.
 
-![Screenshot](resources/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/iwf-web/craft-cp-element-counter/refs/heads/main/resources/screenshot.png)
 
 Brought to you by [IWF](https://www.iwf.ch/web-solutions) with a big thank you to [André Elvan](https://www.vaersaagod.no/) for the original plugin.
 

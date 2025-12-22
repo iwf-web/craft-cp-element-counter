@@ -36,7 +36,7 @@ class CountService extends Component
         $r = [];
         $totalCount = 0;
 
-        $currentSiteHandle = \Craft::$app->request->getParam('site');
+        $currentSiteHandle = \Craft::$app->request->getParam('site') ?? \Craft::$app->getSites()->getCurrentSite()->handle;
         $site = \Craft::$app->sites->getSiteByHandle($currentSiteHandle, true);
 
         foreach ($uids as $uid) {
