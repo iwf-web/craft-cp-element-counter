@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.7](https://github.com/iwf-web/craft-cp-element-counter/compare/5.0.6...5.0.7) - 2025-12-22
+
+
+### 🐛 Bug Fixes
+
+* Add community files & Add Release Mgmnt ([15468b7](https://github.com/iwf-web/craft-cp-element-counter/commit/15468b784eefa8e32118135ecf338df22abf4f38))
+
 ## [5.0.6](https://github.com/iwf-web/craft-cp-element-counter/compare/5.0.5...5.0.6) - 2025-12-18
 
 Happy holidays!
