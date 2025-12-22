@@ -1,0 +1,4 @@
+.claude/settings.local.json
+.php-cs-fixer.cache
+/vendor/
+composer.lock

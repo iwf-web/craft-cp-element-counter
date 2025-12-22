@@ -1,0 +1,70 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/php
+{
+  "name": "PHP Craft",
+
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "image": "mcr.microsoft.com/devcontainers/php:1-8.2-bookworm",
+
+  "remoteEnv": {
+    // https://github.com/devcontainers/features/tree/main/src/docker-outside-of-docker
+    // Following settings are required for Bind Mounts to work with Docker outside of Docker
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}",
+    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}"
+  },
+
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true
+    },
+    "ghcr.io/opencodeco/devcontainers/install-php-extensions:0": {
+      "extensions": "bcmath intl zip"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers-extra/features/act:1": {}
+  },
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "onCreateCommand": "docker pull catthehacker/ubuntu:act-latest",
+  "postCreateCommand": "composer install",
+
+  // Configure tool-specific properties.
+  "customizations": {
+    "codespaces": {
+      "openFiles": ["README.md"]
+    },
+    "vscode": {
+      "extensions": [
+        "sanderronde.phpstan-vscode",
+        //"junstyle.php-cs-fixer",
+        "bierner.markdown-preview-github-styles",
+        "davidanson.vscode-markdownlint",
+        "editorconfig.editorconfig",
+        "github.copilot",
+        "github.copilot-chat",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
+        "me-dutour-mathieu.vscode-github-actions",
+        "redhat.vscode-yaml",
+        "yzhang.markdown-all-in-one"
+      ],
+      "settings": {
+        "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
+        "php-cs-fixer.config": "${workspaceFolder}/.php-cs-fixer.dist.php",
+        "phpstan.binCommand": [
+          "${workspaceFolder}/vendor/bin/phpstan"
+        ]
+      }
+    }
+  }
+
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
+}
