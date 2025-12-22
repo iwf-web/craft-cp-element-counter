@@ -1,0 +1,17 @@
+name: Labeler
+
+on: [pull_request]
+
+jobs:
+  label:
+    name: Label PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # Adding Existing Labels
+      issues: write # Creating New Labels
+    steps:
+      - name: Label PR
+        uses: actions/labeler@v6
+        with:
+          sync-labels: true

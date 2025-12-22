@@ -1,0 +1,13 @@
+{
+    "editor.formatOnSave": true,
+    "[php]": {
+        "editor.tabSize": 4,
+        "editor.defaultFormatter": "junstyle.php-cs-fixer"
+    },
+    //"php-cs-fixer.onsave": true,
+    //"php-cs-fixer.allowRisky": true,
+    //"php-cs-fixer.rules": "",
+    "markdown.extension.list.indentationSize": "adaptive",
+    "markdown.extension.italic.indicator": "_",
+    "markdown.extension.orderedList.marker": "one"
+}

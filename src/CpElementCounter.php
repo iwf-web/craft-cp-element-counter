@@ -1,10 +1,19 @@
-<?php
+<?php declare(strict_types=1);
+
+/**
+ * CP Element Counter plugin
+ *
+ * @package   CraftCPElementCounter
+ * @author    IWF Web Solutions <web-solutions@iwf.ch>
+ * @copyright Copyright (c) 2024-2025 IWF Web Solutions <web-solutions@iwf.ch>
+ * @license   https://github.com/iwf-web/craft-cp-element-counter/blob/main/LICENSE.txt MIT License
+ * @link      https://github.com/iwf-web/craft-cp-element-counter
+ */
 
 namespace cpelementcounter;
 
 use cpelementcounter\assetbundles\CpElementCounterAssetBundle;
 use cpelementcounter\services\CountService;
-use Craft;
 use craft\base\Plugin;
 use craft\events\TemplateEvent;
 use craft\services\Plugins;
@@ -13,13 +22,12 @@ use yii\base\Event;
 use yii\base\InvalidConfigException;
 
 /**
- * Control Panel Element Counter plugin
+ * Control Panel Element Counter plugin.
  *
  * @method static CpElementCounter getInstance()
+ *
  * @author IWF <s.friedrich@iwf.ch>
  * @author André Elvan (thanks!)
- * @copyright IWF
- * @license MIT
  */
 class CpElementCounter extends Plugin
 {
@@ -28,9 +36,7 @@ class CpElementCounter extends Plugin
 
     /**
      * Static property that is an instance of this plugin class so that it can be accessed via
-     * CpElementCounter::$plugin
-     *
-     * @var CpElementCounter
+     * CpElementCounter::$plugin.
      */
     public static CpElementCounter $plugin;
 
@@ -41,44 +47,39 @@ class CpElementCounter extends Plugin
         parent::init();
         self::$plugin = $this;
 
-        Craft::setAlias('@cpelementcounter', __DIR__);
+        \Craft::setAlias('@cpelementcounter', __DIR__);
 
         // Register services
         $this->setComponents([
             'count' => CountService::class,
         ]);
 
-        if (Craft::$app->getRequest()->getIsCpRequest()) {
+        if (\Craft::$app->getRequest()->getIsCpRequest()) {
             Event::on(
                 Plugins::class,
                 Plugins::EVENT_AFTER_LOAD_PLUGINS,
-                function (
-                ) {
+                function (): void {
                     $this->addTemplateEvents();
-                }
+                },
             );
         }
     }
-
 
     private function addTemplateEvents(): void
     {
         // Register CP Asset bundle
         Event::on(View::class,
             View::EVENT_BEFORE_RENDER_TEMPLATE,
-            function (
-                TemplateEvent $event
-            ) {
+            static function (TemplateEvent $event): void {
                 try {
-                    Craft::$app->getView()->registerAssetBundle(CpElementCounterAssetBundle::class);
+                    \Craft::$app->getView()->registerAssetBundle(CpElementCounterAssetBundle::class);
                 } catch (InvalidConfigException $e) {
-                    Craft::error(
+                    \Craft::error(
                         'Error registering AssetBundle - '.$e->getMessage(),
-                        __METHOD__
+                        __METHOD__,
                     );
                 }
-            }
+            },
         );
     }
-
 }
