@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Create Release PR
         id: release
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
         with:
           # Bot PAT with access to Workflows
           # The built-in GITHUB_TOKEN has cannot trigger other workflows
