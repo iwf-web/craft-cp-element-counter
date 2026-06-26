@@ -97,6 +97,41 @@ class CountService extends Component
         return $r;
     }
 
+    public function getEventsCount($uids = []): array
+    {
+        if (\count($uids) === 0) {
+            return [];
+        }
+
+        // Soft dependency on verbb/events — only count if the plugin is installed.
+        if (!class_exists(\verbb\events\elements\Event::class)) {
+            return [];
+        }
+
+        $r = [];
+        $totalCount = 0;
+
+        foreach ($uids as $uid) {
+            $eventType = \verbb\events\Events::$plugin->getEventTypes()->getEventTypeByUid($uid);
+            if ($eventType === null) {
+                continue;
+            }
+
+            $count = \verbb\events\elements\Event::find()
+                ->typeId($eventType->id)
+                ->limit(null)
+                ->status(['disabled', 'enabled'])
+                ->count();
+
+            $r[$uid] = $count;
+            $totalCount += $count;
+        }
+
+        $r['*'] = $totalCount;
+
+        return $r;
+    }
+
     public function getAssetsCount($folders = []): array
     {
         if (\count($folders) === 0) {

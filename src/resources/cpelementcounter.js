@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     var urlInCategories = href.match(/\/categories/);
     var urlInUsers = href.match(/\/users/);
     var urlInAssets = href.match(/\/assets/);
+    var urlInEvents = href.match(/\/events(\/|$|\?)/);
 
     let hasSections = Array.from(document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]')).filter(function (element) {
         return element.getAttribute('data-key').match(/section:\w+/);
@@ -17,6 +18,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         return element.getAttribute('data-key').match(/volume:\w+/);
     }).length > 0;
 
+    let hasEventTypes = Array.from(document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]')).filter(function (element) {
+        return element.getAttribute('data-key').match(/eventType:\w+/);
+    }).length > 0;
+
     if (hasSections) {
         getEntriesCount();
     }
@@ -28,6 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (urlInAssets && hasFolders) {
         getAssetsCount();
+    }
+    if (urlInEvents && hasEventTypes) {
+        getEventsCount();
     }
 
     function addCountToAnchor(val, anchor) {
@@ -107,6 +115,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         );
     }
 
+    function getEventsCount() {
+        var uids = getEventTypeUids();
+
+        Craft.postActionRequest('control-panel-element-counter/count/get-events-count', {uids: uids},
+            function (result) {
+                uids.forEach(function(val, i) {
+                    if (typeof result[val] !== 'undefined') {
+                        var anchor = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key="eventType:' + val + '"]');
+                        if (anchor.length > 0) {
+                            addCountToAnchor(result[val], anchor);
+                        }
+                    }
+                });
+
+                if (typeof result['*'] !== 'undefined') {
+                    var anchor = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key="*"]');
+                    if (anchor.length > 0) {
+                        addCountToAnchor(result['*'], anchor);
+                    }
+                }
+            }
+        );
+    }
+
     function getAssetsCount() {
         var folders = getFolders();
 
@@ -154,6 +186,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         return uids;
     }
 
+
+    function getEventTypeUids() {
+        var uids = [];
+
+        let elements = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]');
+        elements.forEach(function(element) {
+            let key = element.getAttribute('data-key');
+            if (key.match(/eventType:/)) {
+                uids.push(key.replace('eventType:', ''));
+            }
+        });
+
+        return uids;
+    }
 
     function getFolders() {
         var folders = [];

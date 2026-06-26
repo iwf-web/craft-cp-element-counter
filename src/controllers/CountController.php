@@ -62,6 +62,17 @@ class CountController extends Controller
         return $this->asJson($counts);
     }
 
+    public function actionGetEventsCount(): Response
+    {
+        $config = Plugin::$plugin->getSettings();
+        $request = \Craft::$app->getRequest();
+        $uids = $request->getParam('uids', []);
+
+        $counts = Plugin::$plugin->count->getEventsCount($uids);
+
+        return $this->asJson($counts);
+    }
+
     public function actionGetAssetsCount(): Response
     {
         $config = Plugin::$plugin->getSettings();
