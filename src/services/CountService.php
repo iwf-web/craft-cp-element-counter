@@ -21,6 +21,8 @@ use craft\elements\Entry;
 use craft\elements\User;
 use verbb\events\elements\Event;
 use verbb\events\Events;
+use verbb\formie\elements\SentNotification;
+use verbb\formie\elements\Submission;
 
 /**
  * CpElementCounterService Service.
@@ -188,6 +190,78 @@ class CountService extends Component
 
             $r[$key] = $count;
         }
+
+        return $r;
+    }
+
+    /**
+     * Counts Formie submissions per form. `$formIds` are numeric Form IDs that
+     * appear in the sidebar as `data-key="form:<id>"`.
+     *
+     * @param mixed $formIds
+     */
+    public function getSubmissionsCount($formIds = []): array
+    {
+        if (\count($formIds) === 0) {
+            return [];
+        }
+
+        // Soft dependency on verbb/formie.
+        if (!class_exists(Submission::class)) {
+            return [];
+        }
+
+        $r = [];
+        $totalCount = 0;
+
+        foreach ($formIds as $formId) {
+            $count = Submission::find()
+                ->formId((int) $formId)
+                ->limit(null)
+                ->status(null)
+                ->count()
+            ;
+
+            $r[$formId] = $count;
+            $totalCount += $count;
+        }
+
+        $r['*'] = $totalCount;
+
+        return $r;
+    }
+
+    /**
+     * Counts Formie sent notifications per form. Same key pattern as submissions.
+     *
+     * @param mixed $formIds
+     */
+    public function getSentNotificationsCount($formIds = []): array
+    {
+        if (\count($formIds) === 0) {
+            return [];
+        }
+
+        if (!class_exists(SentNotification::class)) {
+            return [];
+        }
+
+        $r = [];
+        $totalCount = 0;
+
+        foreach ($formIds as $formId) {
+            $count = SentNotification::find()
+                ->formId((int) $formId)
+                ->limit(null)
+                ->status(null)
+                ->count()
+            ;
+
+            $r[$formId] = $count;
+            $totalCount += $count;
+        }
+
+        $r['*'] = $totalCount;
 
         return $r;
     }

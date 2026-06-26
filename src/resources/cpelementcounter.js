@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     var urlInAssets = href.match(/\/assets/);
     var urlInEvents = href.match(/\/events(\/|$|\?)/);
     var urlInCommerceOrders = href.match(/\/commerce\/orders/);
+    var urlInFormieSubmissions = href.match(/\/formie\/submissions/);
+    var urlInFormieSentNotifications = href.match(/\/formie\/sent-notifications/);
 
     let hasSections = Array.from(document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]')).filter(function (element) {
         return element.getAttribute('data-key').match(/section:\w+/);
@@ -27,6 +29,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         return element.getAttribute('data-key').match(/^carts:/);
     }).length > 0;
 
+    let hasFormieForms = Array.from(document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]')).filter(function (element) {
+        return element.getAttribute('data-key').match(/^form:\d+$/);
+    }).length > 0;
+
     if (hasSections) {
         getEntriesCount();
     }
@@ -44,6 +50,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (urlInCommerceOrders && hasCarts) {
         getCartsCount();
+    }
+    if (urlInFormieSubmissions && hasFormieForms) {
+        getSubmissionsCount();
+    }
+    if (urlInFormieSentNotifications && hasFormieForms) {
+        getSentNotificationsCount();
     }
 
     function addCountToAnchor(val, anchor) {
@@ -164,6 +176,54 @@ document.addEventListener('DOMContentLoaded', async () => {
         );
     }
 
+    function getSubmissionsCount() {
+        var formIds = getFormieFormIds();
+
+        Craft.postActionRequest('control-panel-element-counter/count/get-submissions-count', {formIds: formIds},
+            function (result) {
+                formIds.forEach(function(val, i) {
+                    if (typeof result[val] !== 'undefined') {
+                        var anchor = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key="form:' + val + '"]');
+                        if (anchor.length > 0) {
+                            addCountToAnchor(result[val], anchor);
+                        }
+                    }
+                });
+
+                if (typeof result['*'] !== 'undefined') {
+                    var anchor = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key="*"]');
+                    if (anchor.length > 0) {
+                        addCountToAnchor(result['*'], anchor);
+                    }
+                }
+            }
+        );
+    }
+
+    function getSentNotificationsCount() {
+        var formIds = getFormieFormIds();
+
+        Craft.postActionRequest('control-panel-element-counter/count/get-sent-notifications-count', {formIds: formIds},
+            function (result) {
+                formIds.forEach(function(val, i) {
+                    if (typeof result[val] !== 'undefined') {
+                        var anchor = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key="form:' + val + '"]');
+                        if (anchor.length > 0) {
+                            addCountToAnchor(result[val], anchor);
+                        }
+                    }
+                });
+
+                if (typeof result['*'] !== 'undefined') {
+                    var anchor = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key="*"]');
+                    if (anchor.length > 0) {
+                        addCountToAnchor(result['*'], anchor);
+                    }
+                }
+            }
+        );
+    }
+
     function getAssetsCount() {
         var folders = getFolders();
 
@@ -238,6 +298,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         return keys;
+    }
+
+    function getFormieFormIds() {
+        var ids = [];
+
+        let elements = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]');
+        elements.forEach(function(element) {
+            let key = element.getAttribute('data-key');
+            let match = key.match(/^form:(\d+)$/);
+            if (match) {
+                ids.push(match[1]);
+            }
+        });
+
+        return ids;
     }
 
     function getFolders() {

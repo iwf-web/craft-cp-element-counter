@@ -84,6 +84,28 @@ class CountController extends Controller
         return $this->asJson($counts);
     }
 
+    public function actionGetSubmissionsCount(): Response
+    {
+        $config = Plugin::$plugin->getSettings();
+        $request = \Craft::$app->getRequest();
+        $formIds = $request->getParam('formIds', []);
+
+        $counts = Plugin::$plugin->count->getSubmissionsCount($formIds);
+
+        return $this->asJson($counts);
+    }
+
+    public function actionGetSentNotificationsCount(): Response
+    {
+        $config = Plugin::$plugin->getSettings();
+        $request = \Craft::$app->getRequest();
+        $formIds = $request->getParam('formIds', []);
+
+        $counts = Plugin::$plugin->count->getSentNotificationsCount($formIds);
+
+        return $this->asJson($counts);
+    }
+
     public function actionGetAssetsCount(): Response
     {
         $config = Plugin::$plugin->getSettings();
