@@ -5,7 +5,7 @@
  *
  * @package   CraftCPElementCounter
  * @author    IWF Web Solutions <web-solutions@iwf.ch>
- * @copyright Copyright (c) 2024-2025 IWF Web Solutions <web-solutions@iwf.ch>
+ * @copyright Copyright (c) 2024-2026 IWF Web Solutions <web-solutions@iwf.ch>
  * @license   https://github.com/iwf-web/craft-cp-element-counter/blob/main/LICENSE.txt MIT License
  * @link      https://github.com/iwf-web/craft-cp-element-counter
  */
@@ -17,6 +17,8 @@ use craft\elements\Asset;
 use craft\elements\Category;
 use craft\elements\Entry;
 use craft\elements\User;
+use verbb\events\elements\Event;
+use verbb\events\Events;
 
 /**
  * CpElementCounterService Service.
@@ -104,7 +106,7 @@ class CountService extends Component
         }
 
         // Soft dependency on verbb/events — only count if the plugin is installed.
-        if (!class_exists(\verbb\events\elements\Event::class)) {
+        if (!class_exists(Event::class)) {
             return [];
         }
 
@@ -112,16 +114,17 @@ class CountService extends Component
         $totalCount = 0;
 
         foreach ($uids as $uid) {
-            $eventType = \verbb\events\Events::$plugin->getEventTypes()->getEventTypeByUid($uid);
+            $eventType = Events::$plugin->getEventTypes()->getEventTypeByUid($uid);
             if ($eventType === null) {
                 continue;
             }
 
-            $count = \verbb\events\elements\Event::find()
+            $count = Event::find()
                 ->typeId($eventType->id)
                 ->limit(null)
                 ->status(['disabled', 'enabled'])
-                ->count();
+                ->count()
+            ;
 
             $r[$uid] = $count;
             $totalCount += $count;
