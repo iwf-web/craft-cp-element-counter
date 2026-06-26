@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     var urlInUsers = href.match(/\/users/);
     var urlInAssets = href.match(/\/assets/);
     var urlInEvents = href.match(/\/events(\/|$|\?)/);
+    var urlInCommerceOrders = href.match(/\/commerce\/orders/);
 
     let hasSections = Array.from(document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]')).filter(function (element) {
         return element.getAttribute('data-key').match(/section:\w+/);
@@ -22,6 +23,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         return element.getAttribute('data-key').match(/eventType:\w+/);
     }).length > 0;
 
+    let hasCarts = Array.from(document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]')).filter(function (element) {
+        return element.getAttribute('data-key').match(/^carts:/);
+    }).length > 0;
+
     if (hasSections) {
         getEntriesCount();
     }
@@ -36,6 +41,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (urlInEvents && hasEventTypes) {
         getEventsCount();
+    }
+    if (urlInCommerceOrders && hasCarts) {
+        getCartsCount();
     }
 
     function addCountToAnchor(val, anchor) {
@@ -139,6 +147,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         );
     }
 
+    function getCartsCount() {
+        var keys = getCartKeys();
+
+        Craft.postActionRequest('control-panel-element-counter/count/get-carts-count', {keys: keys},
+            function (result) {
+                keys.forEach(function(val, i) {
+                    if (typeof result[val] !== 'undefined') {
+                        var anchor = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key="' + val + '"]');
+                        if (anchor.length > 0) {
+                            addCountToAnchor(result[val], anchor);
+                        }
+                    }
+                });
+            }
+        );
+    }
+
     function getAssetsCount() {
         var folders = getFolders();
 
@@ -199,6 +224,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         return uids;
+    }
+
+    function getCartKeys() {
+        var keys = [];
+
+        let elements = document.querySelectorAll('#main-content.has-sidebar .sidebar li a[data-key]');
+        elements.forEach(function(element) {
+            let key = element.getAttribute('data-key');
+            if (key.match(/^carts:/)) {
+                keys.push(key);
+            }
+        });
+
+        return keys;
     }
 
     function getFolders() {

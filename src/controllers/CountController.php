@@ -73,6 +73,17 @@ class CountController extends Controller
         return $this->asJson($counts);
     }
 
+    public function actionGetCartsCount(): Response
+    {
+        $config = Plugin::$plugin->getSettings();
+        $request = \Craft::$app->getRequest();
+        $keys = $request->getParam('keys', []);
+
+        $counts = Plugin::$plugin->count->getCartsCount($keys);
+
+        return $this->asJson($counts);
+    }
+
     public function actionGetAssetsCount(): Response
     {
         $config = Plugin::$plugin->getSettings();

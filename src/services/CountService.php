@@ -13,6 +13,8 @@
 namespace cpelementcounter\services;
 
 use craft\base\Component;
+use craft\commerce\elements\Order;
+use craft\commerce\Plugin as CommercePlugin;
 use craft\elements\Asset;
 use craft\elements\Category;
 use craft\elements\Entry;
@@ -131,6 +133,61 @@ class CountService extends Component
         }
 
         $r['*'] = $totalCount;
+
+        return $r;
+    }
+
+    /**
+     * Counts orders for the cart sources rendered by craft\commerce on the orders index.
+     * Keys are passed in full (e.g. `carts:active:default`, `carts:inactive:default`,
+     * `carts:attempted-payment:default`) so the caller doesn't need to know the
+     * Commerce store handle.
+     *
+     * @param mixed $keys
+     */
+    public function getCartsCount($keys = []): array
+    {
+        if (\count($keys) === 0) {
+            return [];
+        }
+
+        // Soft dependency on craft\commerce — only count if the plugin is installed.
+        if (!class_exists(Order::class)) {
+            return [];
+        }
+
+        $r = [];
+        $edge = CommercePlugin::getInstance()->getCarts()->getActiveCartEdgeDuration();
+
+        foreach ($keys as $key) {
+            // Expected shape: "carts:<type>:<storeHandle>"
+            $parts = explode(':', $key);
+            if (\count($parts) !== 3 || $parts[0] !== 'carts') {
+                continue;
+            }
+            [$_, $type, $storeHandle] = $parts;
+
+            $store = CommercePlugin::getInstance()->getStores()->getStoreByHandle($storeHandle);
+            if ($store === null) {
+                continue;
+            }
+
+            $query = Order::find()
+                ->storeId($store->id)
+                ->isCompleted(false)
+                ->limit(null)
+                ->status(null)
+            ;
+
+            $count = match ($type) {
+                'active' => $query->dateUpdated('>= '.$edge)->count(),
+                'inactive' => $query->dateUpdated('< '.$edge)->count(),
+                'attempted-payment' => $query->hasTransactions(true)->count(),
+                default => 0,
+            };
+
+            $r[$key] = $count;
+        }
 
         return $r;
     }
