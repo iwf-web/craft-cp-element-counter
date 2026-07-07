@@ -43,18 +43,10 @@ trim_trailing_whitespace = false
 # Trailing whitespace means manual linebreaks in Markdown thus is not trimmable
 trim_trailing_whitespace = false
 
-[{*.php,.php_cs.dist}]
-indent_size = 4
-tab_width = 4
-ij_continuation_indent_size = 4
-
-[{.vscode/settings.json,composer.json,.phpunit.result.cache,composer.lock}]
+[{.vscode/settings.json,composer.json,.phpunit.result.cache,composer.lock,*.php,.php_cs.dist,*.neon,*.neon.dist}]
 indent_size = 4
 tab_width = 4
 ij_continuation_indent_size = 4
 
 [*{.neon,.neon.dist}]
-indent_size = 4
-tab_width = 4
-ij_continuation_indent_size = 4
 indent_style = tab

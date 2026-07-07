@@ -1,0 +1,12 @@
+# https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
+# Last matching pattern wins. Only ONE listed owner needs to approve, not all.
+
+# Default owner for everything.
+* @stefanfriedrich
+
+# Files Dependabot manages — @iwf-web/ci (incl. the bot user) can also review,
+# so the bot's auto-approval satisfies the code-owner requirement on these paths.
+# composer
+/composer.json @stefanfriedrich @iwf-web/ci
+# github-actions
+/.github/workflows/ @stefanfriedrich @iwf-web/ci

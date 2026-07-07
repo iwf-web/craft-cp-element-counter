@@ -19,12 +19,6 @@ parameters:
 			path: src/CpElementCounter.php
 
 		-
-			message: '#^Method cpelementcounter\\assetbundles\\CpElementCounterAssetBundle\:\:init\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/assetbundles/CpElementCounterAssetBundle.php
-
-		-
 			message: '#^Access to an undefined property cpelementcounter\\CpElementCounter\:\:\$count\.$#'
 			identifier: property.notFound
 			count: 4
@@ -51,7 +45,7 @@ parameters:
 		-
 			message: '#^Access to static property \$app on an unknown class Craft\.$#'
 			identifier: class.notFound
-			count: 5
+			count: 6
 			path: src/services/CountService.php
 
 		-
