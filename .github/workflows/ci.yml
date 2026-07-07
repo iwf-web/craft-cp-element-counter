@@ -2,20 +2,84 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main, develop]
   pull_request:
 
 permissions:
   contents: read
 
 jobs:
+  # Runs through the Composer scripts (composer.json "scripts"). Each check streams
+  # into the job summary and uses continue-on-error so one failure never skips the
+  # rest — a trailing gate re-derives pass/fail.
+  #
+  # NOTE: ECS (composer check-cs) is intentionally NOT gated here. The Craft ECS
+  # standard and the IWFWeb PHP-CS-Fixer standard have contradictory rules
+  # (declare placement, function-name spacing, concat spacing), so they can't both
+  # pass on the same code. PHP-CS-Fixer is the enforced formatter; ECS stays as a
+  # script for anyone who wants the Craft view.
+  style:
+    name: Code style & static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache-dir-path
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      - name: Cache Composer downloads
+        uses: actions/cache@v6
+        with:
+          path: ${{ steps.composer-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Validate composer.json
+        id: validate
+        continue-on-error: true
+        run: bash .github/scripts/summarize-step.sh "composer validate" composer validate --strict --no-plugins
+
+      - name: PHP-CS-Fixer (code style)
+        id: cs-fixer
+        continue-on-error: true
+        run: bash .github/scripts/summarize-step.sh "PHP-CS-Fixer" composer cs
+
+      #- name: ECS (Craft coding standard)
+      #  id: ecs
+      #  continue-on-error: true
+      #  run: bash .github/scripts/summarize-step.sh "ECS" composer check-cs
+
+      - name: PHPStan (static analysis)
+        id: phpstan
+        continue-on-error: true
+        run: bash .github/scripts/summarize-step.sh "PHPStan" composer phpstan
+
+      - name: Fail if any check failed
+        if: always()
+        run: |
+          if [ "${{ steps.validate.outcome }}" = "failure" ] \
+             || [ "${{ steps.cs-fixer.outcome }}" = "failure" ] \
+             || [ "${{ steps.phpstan.outcome }}" = "failure" ]; then
+            exit 1
+          fi
+
   lint:
+    name: Lint (PHP ${{ matrix.php-version }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         php-version: ["8.2", "8.3", "8.4", "8.5", "8.6"]
-    name: Lint (PHP ${{ matrix.php-version }})
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -24,23 +88,16 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          tools: composer:v2
-
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-      - name: Cache Composer dependencies
-        uses: actions/cache@v6
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+          coverage: none
 
       - name: PHP Linter
-        run: find . -name "*.php" -not -path "./vendor/*" | xargs -P$(nproc) -n1 php -l
+        run: find . -name "*.php" -not -path "./vendor/*" | xargs -P"$(nproc)" -n1 php -l
 
-      - name: Run PHP-CS-Fixer
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff
+      # No test suite yet. Once one exists (Codeception/PHPUnit via the
+      # craftcms/craft test harness + a "test" composer script), uncomment these
+      # to run it across the PHP matrix above.
+      # - name: Install dependencies
+      #   run: composer install --prefer-dist --no-progress
+      #
+      # - name: Run tests
+      #   run: composer test

@@ -1,0 +1,46 @@
+name: Dependabot Validate Config
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - '.github/dependabot.yml'
+      - '.github/workflows/dependabot-validate.yml'
+  pull_request:
+    paths:
+      - '.github/dependabot.yml'
+      - '.github/workflows/dependabot-validate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Validates .github/dependabot.yml against the official schema; the action
+      # calls core.setFailed() itself on an invalid config, so it gates the job.
+      - name: Validate dependabot config
+        id: validate
+        uses: marocchino/validate-dependabot@v3
+        with:
+          success_message: '.github/dependabot.yml is valid'
+          failure_message: 'Invalid .github/dependabot.yml — schema errors:'
+
+      # The action only exposes the result as its `markdown` output; surface it in
+      # the job summary (success message, or failure message + error table). Runs on
+      # always() so it reports even after the validate step fails. Passed via env to
+      # keep the multi-line, pipe-laden value from breaking the shell.
+      - name: Report result to job summary
+        if: always()
+        env:
+          RESULT: ${{ steps.validate.outputs.markdown }}
+        run: |
+          {
+            echo "## Dependabot config"
+            echo
+            echo "$RESULT"
+          } >> "$GITHUB_STEP_SUMMARY"

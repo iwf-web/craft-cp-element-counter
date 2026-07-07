@@ -21,6 +21,8 @@ jobs:
         id: release
         uses: googleapis/release-please-action@v5
         with:
+          config-file: .github/release-please-config.json
+          manifest-file: .github/release-please-manifest.json
           # Bot PAT with access to Workflows
           # The built-in GITHUB_TOKEN has cannot trigger other workflows
           token: ${{ secrets.GH_PAT }}

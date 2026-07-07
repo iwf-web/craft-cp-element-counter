@@ -16,16 +16,10 @@ updates:
       interval: weekly # on monday
       time: '09:30'
       timezone: Europe/Zurich
-
-  - package-ecosystem: devcontainers
-    directory: /
-    target-branch: develop
-    labels:
-      - "dependabot :robot:"
-    schedule:
-      interval: weekly
-      time: '09:30'
-      timezone: Europe/Zurich
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: composer
     directory: /
@@ -36,3 +30,7 @@ updates:
       interval: weekly
       time: '09:30'
       timezone: Europe/Zurich
+    groups:
+      composer:
+        patterns:
+          - "*"
