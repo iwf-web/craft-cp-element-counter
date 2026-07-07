@@ -5,7 +5,7 @@
  *
  * @package   CraftCPElementCounter
  * @author    IWF Web Solutions <web-solutions@iwf.ch>
- * @copyright Copyright (c) 2024-2025 IWF Web Solutions <web-solutions@iwf.ch>
+ * @copyright Copyright (c) 2024-2026 IWF Web Solutions <web-solutions@iwf.ch>
  * @license   https://github.com/iwf-web/craft-cp-element-counter/blob/main/LICENSE.txt MIT License
  * @link      https://github.com/iwf-web/craft-cp-element-counter
  */
