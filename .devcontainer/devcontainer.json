@@ -1,10 +1,12 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/php
 {
-  "name": "PHP Craft",
+  "name": "PHP Craft CP Element Counter",
 
-  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/devcontainers/php:1-8.2-bookworm",
+  // Uses .devcontainer/Dockerfile (base image + Yarn-repo fix). More info: https://containers.dev/guide/dockerfile
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
 
   "remoteEnv": {
     // https://github.com/devcontainers/features/tree/main/src/docker-outside-of-docker
@@ -19,7 +21,7 @@
       "configureZshAsDefaultShell": true
     },
     "ghcr.io/opencodeco/devcontainers/install-php-extensions:0": {
-      "extensions": "bcmath intl zip"
+      "extensions": "bcmath intl zip gd"
     },
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
       "moby": false
@@ -58,9 +60,18 @@
       "settings": {
         "php-cs-fixer.executablePath": "${workspaceFolder}/vendor/bin/php-cs-fixer",
         "php-cs-fixer.config": "${workspaceFolder}/.php-cs-fixer.dist.php",
-        "phpstan.binCommand": [
-          "${workspaceFolder}/vendor/bin/phpstan"
-        ]
+        "phpstan.binCommand": ["${workspaceFolder}/vendor/bin/phpstan"],
+        //"editor.formatOnSave": true,
+        "[php]": {
+          "editor.tabSize": 4,
+          "editor.defaultFormatter": "junstyle.php-cs-fixer"
+        }
+        //"php-cs-fixer.onsave": true,
+        //"php-cs-fixer.allowRisky": true,
+        //"php-cs-fixer.rules": "",
+        //"markdown.extension.list.indentationSize": "adaptive",
+        //"markdown.extension.italic.indicator": "_",
+        //"markdown.extension.orderedList.marker": "one"
       }
     }
   }
