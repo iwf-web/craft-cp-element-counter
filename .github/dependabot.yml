@@ -13,7 +13,8 @@ updates:
     labels:
       - "dependabot :robot:"
     schedule:
-      interval: weekly # on monday
+      interval: weekly
+      day: monday
       time: '09:30'
       timezone: Europe/Zurich
     groups:
@@ -28,6 +29,7 @@ updates:
       - "dependabot :robot:"
     schedule:
       interval: weekly
+      day: monday
       time: '09:30'
       timezone: Europe/Zurich
     groups:
