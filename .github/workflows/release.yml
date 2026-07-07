@@ -23,21 +23,33 @@ jobs:
         with:
           config-file: .github/release-please-config.json
           manifest-file: .github/release-please-manifest.json
-          # Bot PAT with access to Workflows
-          # The built-in GITHUB_TOKEN has cannot trigger other workflows
+          # Bot PAT with access to Workflows: the built-in GITHUB_TOKEN can't
+          # trigger other workflows on the tag it pushes.
           token: ${{ secrets.GH_PAT }}
 
+  # Reformats the changelog to Craft's style and reattributes the release commit to
+  # github-actions[bot] — release-please-action commits it as the GH_PAT owner
+  # (iwf-web-bot), so without this the release commit is authored by the bot account.
   fix-changelog:
     needs: release-please
-    if: ${{ needs.release-please.outputs.prs_created == 'true' }}
+    if: ${{ needs.release-please.outputs.pr != '' }}
     runs-on: ubuntu-latest
+    env:
+      # release-please's branch name varies by config; read it from the PR object
+      # rather than hardcoding release-please--branches--main.
+      PR_BRANCH: ${{ fromJSON(needs.release-please.outputs.pr).headBranchName }}
     steps:
-      - name: Checkout PR branch
+      - name: Checkout release-please branch
         uses: actions/checkout@v7
         with:
           token: ${{ secrets.GH_PAT }}
-          ref: release-please--branches--main
+          ref: ${{ env.PR_BRANCH }}
           fetch-depth: 2
+
+      - name: Configure git as github-actions[bot]
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Transform changelog to Craft CMS format
         run: |
@@ -46,8 +58,10 @@ jobs:
 
       - name: Amend release commit with changelog fix
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          set -euo pipefail
+          # --reset-author rewrites author + committer to the bot; --no-edit keeps the
+          # message. Amend unconditionally so the author is reset even when the
+          # changelog transform is a no-op. Stage any changelog change first.
           git add CHANGELOG.md
-          git diff --staged --quiet || git commit --amend --no-edit
-          git push origin release-please--branches--main --force-with-lease
+          git commit --amend --reset-author --no-edit
+          git push origin "$PR_BRANCH" --force-with-lease
