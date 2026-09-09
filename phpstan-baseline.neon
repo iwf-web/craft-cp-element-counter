@@ -49,8 +49,14 @@ parameters:
 			path: src/services/CountService.php
 
 		-
-			message: '#^Call to an undefined method craft\\elements\\db\\ElementQueryInterface\:\:typeId\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Access to static property \$plugin on an unknown class verbb\\events\\Events\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/services/CountService.php
+
+		-
+			message: '#^Call to static method getInstance\(\) on an unknown class craft\\commerce\\Plugin\.$#'
+			identifier: class.notFound
 			count: 1
 			path: src/services/CountService.php
 
