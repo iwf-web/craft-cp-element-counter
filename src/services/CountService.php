@@ -103,14 +103,25 @@ class CountService extends Component
         return $r;
     }
 
-    public function getEventsCount($uids = []): array
+    /**
+     * @param string[] $uids
+     *
+     * @return array<string, int>
+     */
+    public function getEventsCount(array $uids = []): array
     {
         if (\count($uids) === 0) {
             return [];
         }
 
-        // Soft dependency on verbb/events — only count if the plugin is installed.
+        // Soft dependency on verbb/events — the class can exist without the
+        // plugin being installed, so the instance is what decides.
         if (!class_exists(Event::class)) {
+            return [];
+        }
+
+        $events = Events::$plugin;
+        if ($events === null) {
             return [];
         }
 
@@ -118,12 +129,12 @@ class CountService extends Component
         $totalCount = 0;
 
         foreach ($uids as $uid) {
-            $eventType = Events::$plugin->getEventTypes()->getEventTypeByUid($uid);
+            $eventType = $events->getEventTypes()->getEventTypeByUid($uid);
             if ($eventType === null) {
                 continue;
             }
 
-            $count = Event::find()
+            $count = (int) Event::find()
                 ->typeId($eventType->id)
                 ->limit(null)
                 ->status(['disabled', 'enabled'])
@@ -145,21 +156,29 @@ class CountService extends Component
      * `carts:attempted-payment:default`) so the caller doesn't need to know the
      * Commerce store handle.
      *
-     * @param mixed $keys
+     * @param string[] $keys
+     *
+     * @return array<string, int>
      */
-    public function getCartsCount($keys = []): array
+    public function getCartsCount(array $keys = []): array
     {
         if (\count($keys) === 0) {
             return [];
         }
 
-        // Soft dependency on craft\commerce — only count if the plugin is installed.
+        // Soft dependency on craft\commerce — the class can exist without the
+        // plugin being installed, so the instance is what decides.
         if (!class_exists(Order::class)) {
             return [];
         }
 
+        $commerce = CommercePlugin::getInstance();
+        if ($commerce === null) {
+            return [];
+        }
+
         $r = [];
-        $edge = CommercePlugin::getInstance()->getCarts()->getActiveCartEdgeDuration();
+        $edge = $commerce->getCarts()->getActiveCartEdgeDuration();
 
         foreach ($keys as $key) {
             // Expected shape: "carts:<type>:<storeHandle>"
@@ -169,7 +188,7 @@ class CountService extends Component
             }
             [$_, $type, $storeHandle] = $parts;
 
-            $store = CommercePlugin::getInstance()->getStores()->getStoreByHandle($storeHandle);
+            $store = $commerce->getStores()->getStoreByHandle($storeHandle);
             if ($store === null) {
                 continue;
             }
@@ -182,9 +201,9 @@ class CountService extends Component
             ;
 
             $count = match ($type) {
-                'active' => $query->dateUpdated('>= '.$edge)->count(),
-                'inactive' => $query->dateUpdated('< '.$edge)->count(),
-                'attempted-payment' => $query->hasTransactions(true)->count(),
+                'active' => (int) $query->dateUpdated('>= '.$edge)->count(),
+                'inactive' => (int) $query->dateUpdated('< '.$edge)->count(),
+                'attempted-payment' => (int) $query->hasTransactions(true)->count(),
                 default => 0,
             };
 
@@ -198,9 +217,11 @@ class CountService extends Component
      * Counts Formie submissions per form. `$formIds` are numeric Form IDs that
      * appear in the sidebar as `data-key="form:<id>"`.
      *
-     * @param mixed $formIds
+     * @param array<int|string> $formIds
+     *
+     * @return array<int|string, int>
      */
-    public function getSubmissionsCount($formIds = []): array
+    public function getSubmissionsCount(array $formIds = []): array
     {
         if (\count($formIds) === 0) {
             return [];
@@ -215,7 +236,7 @@ class CountService extends Component
         $totalCount = 0;
 
         foreach ($formIds as $formId) {
-            $count = Submission::find()
+            $count = (int) Submission::find()
                 ->formId((int) $formId)
                 ->limit(null)
                 ->status(null)
@@ -234,9 +255,11 @@ class CountService extends Component
     /**
      * Counts Formie sent notifications per form. Same key pattern as submissions.
      *
-     * @param mixed $formIds
+     * @param array<int|string> $formIds
+     *
+     * @return array<int|string, int>
      */
-    public function getSentNotificationsCount($formIds = []): array
+    public function getSentNotificationsCount(array $formIds = []): array
     {
         if (\count($formIds) === 0) {
             return [];
@@ -250,7 +273,7 @@ class CountService extends Component
         $totalCount = 0;
 
         foreach ($formIds as $formId) {
-            $count = SentNotification::find()
+            $count = (int) SentNotification::find()
                 ->formId((int) $formId)
                 ->limit(null)
                 ->status(null)
