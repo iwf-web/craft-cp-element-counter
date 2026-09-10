@@ -13,10 +13,16 @@
 namespace cpelementcounter\services;
 
 use craft\base\Component;
+use craft\commerce\elements\Order;
+use craft\commerce\Plugin as CommercePlugin;
 use craft\elements\Asset;
 use craft\elements\Category;
 use craft\elements\Entry;
 use craft\elements\User;
+use verbb\events\elements\Event;
+use verbb\events\Events;
+use verbb\formie\elements\SentNotification;
+use verbb\formie\elements\Submission;
 
 /**
  * CpElementCounterService Service.
@@ -93,6 +99,192 @@ class CountService extends Component
 
         $count = User::find()->admin(true)->limit(null)->status(null)->count();
         $r['admins'] = $count;
+
+        return $r;
+    }
+
+    /**
+     * @param string[] $uids
+     *
+     * @return array<string, int>
+     */
+    public function getEventsCount(array $uids = []): array
+    {
+        if (\count($uids) === 0) {
+            return [];
+        }
+
+        // Soft dependency on verbb/events — the class can exist without the
+        // plugin being installed, so the instance is what decides.
+        if (!class_exists(Event::class)) {
+            return [];
+        }
+
+        $events = Events::$plugin;
+        if ($events === null) {
+            return [];
+        }
+
+        $r = [];
+        $totalCount = 0;
+
+        foreach ($uids as $uid) {
+            $eventType = $events->getEventTypes()->getEventTypeByUid($uid);
+            if ($eventType === null) {
+                continue;
+            }
+
+            $count = (int) Event::find()
+                ->typeId($eventType->id)
+                ->limit(null)
+                ->status(['disabled', 'enabled'])
+                ->count()
+            ;
+
+            $r[$uid] = $count;
+            $totalCount += $count;
+        }
+
+        $r['*'] = $totalCount;
+
+        return $r;
+    }
+
+    /**
+     * Counts orders for the cart sources rendered by craft\commerce on the orders index.
+     * Keys are passed in full (e.g. `carts:active:default`, `carts:inactive:default`,
+     * `carts:attempted-payment:default`) so the caller doesn't need to know the
+     * Commerce store handle.
+     *
+     * @param string[] $keys
+     *
+     * @return array<string, int>
+     */
+    public function getCartsCount(array $keys = []): array
+    {
+        if (\count($keys) === 0) {
+            return [];
+        }
+
+        // Soft dependency on craft\commerce — the class can exist without the
+        // plugin being installed, so the instance is what decides.
+        if (!class_exists(Order::class)) {
+            return [];
+        }
+
+        $commerce = CommercePlugin::getInstance();
+        if ($commerce === null) {
+            return [];
+        }
+
+        $r = [];
+        $edge = $commerce->getCarts()->getActiveCartEdgeDuration();
+
+        foreach ($keys as $key) {
+            // Expected shape: "carts:<type>:<storeHandle>"
+            $parts = explode(':', $key);
+            if (\count($parts) !== 3 || $parts[0] !== 'carts') {
+                continue;
+            }
+            [$_, $type, $storeHandle] = $parts;
+
+            $store = $commerce->getStores()->getStoreByHandle($storeHandle);
+            if ($store === null) {
+                continue;
+            }
+
+            $query = Order::find()
+                ->storeId($store->id)
+                ->isCompleted(false)
+                ->limit(null)
+                ->status(null)
+            ;
+
+            $count = match ($type) {
+                'active' => (int) $query->dateUpdated('>= '.$edge)->count(),
+                'inactive' => (int) $query->dateUpdated('< '.$edge)->count(),
+                'attempted-payment' => (int) $query->hasTransactions(true)->count(),
+                default => 0,
+            };
+
+            $r[$key] = $count;
+        }
+
+        return $r;
+    }
+
+    /**
+     * Counts Formie submissions per form. `$formIds` are numeric Form IDs that
+     * appear in the sidebar as `data-key="form:<id>"`.
+     *
+     * @param array<int|string> $formIds
+     *
+     * @return array<int|string, int>
+     */
+    public function getSubmissionsCount(array $formIds = []): array
+    {
+        if (\count($formIds) === 0) {
+            return [];
+        }
+
+        // Soft dependency on verbb/formie.
+        if (!class_exists(Submission::class)) {
+            return [];
+        }
+
+        $r = [];
+        $totalCount = 0;
+
+        foreach ($formIds as $formId) {
+            $count = (int) Submission::find()
+                ->formId((int) $formId)
+                ->limit(null)
+                ->status(null)
+                ->count()
+            ;
+
+            $r[$formId] = $count;
+            $totalCount += $count;
+        }
+
+        $r['*'] = $totalCount;
+
+        return $r;
+    }
+
+    /**
+     * Counts Formie sent notifications per form. Same key pattern as submissions.
+     *
+     * @param array<int|string> $formIds
+     *
+     * @return array<int|string, int>
+     */
+    public function getSentNotificationsCount(array $formIds = []): array
+    {
+        if (\count($formIds) === 0) {
+            return [];
+        }
+
+        if (!class_exists(SentNotification::class)) {
+            return [];
+        }
+
+        $r = [];
+        $totalCount = 0;
+
+        foreach ($formIds as $formId) {
+            $count = (int) SentNotification::find()
+                ->formId((int) $formId)
+                ->limit(null)
+                ->status(null)
+                ->count()
+            ;
+
+            $r[$formId] = $count;
+            $totalCount += $count;
+        }
+
+        $r['*'] = $totalCount;
 
         return $r;
     }

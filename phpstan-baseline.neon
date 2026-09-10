@@ -21,13 +21,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property cpelementcounter\\CpElementCounter\:\:\$count\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 8
 			path: src/controllers/CountController.php
 
 		-
 			message: '#^Access to static property \$app on an unknown class Craft\.$#'
 			identifier: class.notFound
-			count: 4
+			count: 8
 			path: src/controllers/CountController.php
 
 		-
@@ -46,6 +46,18 @@ parameters:
 			message: '#^Access to static property \$app on an unknown class Craft\.$#'
 			identifier: class.notFound
 			count: 6
+			path: src/services/CountService.php
+
+		-
+			message: '#^Access to static property \$plugin on an unknown class verbb\\events\\Events\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/services/CountService.php
+
+		-
+			message: '#^Call to static method getInstance\(\) on an unknown class craft\\commerce\\Plugin\.$#'
+			identifier: class.notFound
+			count: 1
 			path: src/services/CountService.php
 
 		-
