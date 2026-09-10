@@ -50,6 +50,27 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/) f
 
 We use [SemVer](http://semver.org/) for versioning. For available versions, see the [tags on this repository][gh-tags].
 
+There is no `version` field in `composer.json` — Composer derives the version from the Git tag.
+
+## Releasing
+
+Releases are automated with [release-please][release-please]. Tags and changelog entries are never written by hand.
+
+1. Merge your work into `develop`, using [Conventional Commits](https://www.conventionalcommits.org/).
+2. Open a pull request from `develop` to `main` and merge it.
+3. release-please opens a release pull request (`chore(main): release x.y.z`) that bumps [`.github/release-please-manifest.json`](.github/release-please-manifest.json) and prepends an entry to `CHANGELOG.md`.
+4. Merge that pull request. The tag and the GitHub release follow automatically.
+
+The commit types drive the version bump: a `feat:` gives a minor release, `fix:` and `perf:` a patch, and `feat!:` or a `BREAKING CHANGE:` footer a major one.
+
+Only the types configured in [`.github/release-please-config.json`](.github/release-please-config.json) reach the changelog — `feat`, `fix`, `perf`, `refactor` and `docs`. Everything else, `chore`, `test`, `style`, `build` and `ci` included, is left out. The bullet text is the commit description verbatim, so it is worth writing that line for a reader of the changelog.
+
+### Pull request titles
+
+Do not prefix pull request titles with a Conventional Commit type.
+
+GitHub writes the pull request title into the body of the merge commit, and release-please reads it like any other commit message. A pull request titled `feat: count carts` therefore contributes a changelog entry of its own, on top of the entries from the commits it contains, and the same work gets listed twice. Give the pull request a plain title ("Cart counters") and let the commits speak.
+
 ## Authors
 
 ### Special thanks for all the people who had helped this project so far
@@ -80,3 +101,4 @@ This project currently uses no third-party libraries or copied code.
 [gh-tags]: https://github.com/iwf-web/craft-cp-element-counter/tags
 [gh-contributors]: https://github.com/iwf-web/craft-cp-element-counter/contributors
 [contributing]: https://github.com/iwf-web/.github/blob/main/CONTRIBUTING.md
+[release-please]: https://github.com/googleapis/release-please
