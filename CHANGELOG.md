@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.1.1](https://github.com/iwf-web/craft-cp-element-counter/compare/5.1.0...5.1.1) - 2026-09-10
+
+
+### Documentation
+
+* document the release process and the PR-title rule ([b24d515](https://github.com/iwf-web/craft-cp-element-counter/commit/b24d515ad0ab8fa1bce00d17f475ea3fb049df95))
+* drop the emoji from the changelog section headings ([1365e3c](https://github.com/iwf-web/craft-cp-element-counter/commit/1365e3cca7bf2156b8b20d8f901ee614f27f2479))
+
 ## [5.1.0](https://github.com/iwf-web/craft-cp-element-counter/compare/5.0.8...5.1.0) - 2026-09-10
 
 
