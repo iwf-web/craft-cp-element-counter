@@ -1,4 +1,7 @@
 .claude/settings.local.json
+CLAUDE.md
 .php-cs-fixer.cache
 /vendor/
 composer.lock
+.DS_Store
+.idea/

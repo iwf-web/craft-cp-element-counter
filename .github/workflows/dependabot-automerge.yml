@@ -17,10 +17,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Fetch Dependabot metadata 🔍
-        uses: dependabot/fetch-metadata@v2
+        uses: dependabot/fetch-metadata@v3
         id: metadata
         with:
           github-token: ${{ github.token }}
