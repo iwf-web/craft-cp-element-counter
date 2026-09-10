@@ -6,7 +6,6 @@
 ### Features
 
 * count Commerce active/inactive/attempted-payment carts ([3a47bf0](https://github.com/iwf-web/craft-cp-element-counter/commit/3a47bf060bc068a9dde7186326b0ef7eff070db9))
-* count Events & Formie submissions & Commerce ([9d66f5f](https://github.com/iwf-web/craft-cp-element-counter/commit/9d66f5f728a100e0e08bcecea1229c7312d1650a))
 * count Formie submissions and sent notifications per form ([e8768b3](https://github.com/iwf-web/craft-cp-element-counter/commit/e8768b3c9b064d16d853b3f8230a69e23263bd53))
 * count Verbb Events Events per Event Type ([7d44878](https://github.com/iwf-web/craft-cp-element-counter/commit/7d44878dd694e7773ee2b050f8a6de2f37a8a07e))
 
@@ -18,7 +17,6 @@
 
 ### Documentation
 
-* simplify repository documentation and update configurations ([a47b48c](https://github.com/iwf-web/craft-cp-element-counter/commit/a47b48c3674c945879da9049d3e327bd6e501867))
 * simplify the repository documentation ([13cee83](https://github.com/iwf-web/craft-cp-element-counter/commit/13cee8322e2374596ba9286b93e9963104d81299))
 
 ## [5.0.8](https://github.com/iwf-web/craft-cp-element-counter/compare/5.0.7...5.0.8) - 2025-12-22
