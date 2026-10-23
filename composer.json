@@ -37,6 +37,8 @@
         "iwf-web/php-coding-standard": "^1.0",
         "phpstan/phpstan": "^2.1"
     },
+    "minimum-stability": "alpha",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "cpelementcounter\\": "src/"

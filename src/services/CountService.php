@@ -49,7 +49,7 @@ class CountService
     ];
 
     /**
-     * @var array<string, int>|null
+     * @var null|array<string, int>
      */
     private ?array $counts = null;
 
@@ -98,11 +98,13 @@ class CountService
                         continue;
                     }
 
-                    if ((string) ($source['key'] ?? '') === '') {
+                    $key = $source['key'] ?? null;
+
+                    if (!\is_string($key) || $key === '') {
                         continue;
                     }
 
-                    $url = Url::cpUrl($this->sourcePath($elementType, $pagePath, $source, $page));
+                    $url = Url::cpUrl($this->sourcePath($elementType, $pagePath, $key, $source, $page));
                     $counts[$url] = $this->count($elementType, $source, $siteId);
                 }
             }
@@ -133,7 +135,7 @@ class CountService
      *
      * @param class-string<ElementInterface> $elementType
      *
-     * @return list<string|null>
+     * @return list<null|string>
      */
     private function pages(string $elementType): array
     {
@@ -143,7 +145,7 @@ class CountService
 
         $pages = $this->elementSources->getPages(Entry::class, ElementSources::CONTEXT_NAVIGATION);
 
-        return $pages->isNotEmpty() ? $pages->values()->all() : [null];
+        return $pages->isNotEmpty() ? array_values($pages->all()) : [null];
     }
 
     /**
@@ -152,10 +154,8 @@ class CountService
      * @param class-string<ElementInterface> $elementType
      * @param array<string, mixed>           $source
      */
-    private function sourcePath(string $elementType, string $indexPath, array $source, ?string $page): string
+    private function sourcePath(string $elementType, string $indexPath, string $key, array $source, ?string $page): string
     {
-        $key = (string) $source['key'];
-
         return $elementType::sourceCpUri($source, $page)
             ?? ($key === '*' ? $indexPath : $indexPath.'?source='.rawurlencode($key));
     }
