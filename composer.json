@@ -28,8 +28,8 @@
         "rss": "https://github.com/iwf-web/craft-cp-element-counter/releases.atom"
     },
     "require": {
-        "php": ">=8.2",
-        "craftcms/cms": "^5.0.0"
+        "php": "^8.5",
+        "craftcms/cms": "^6.0.0-alpha.20"
     },
     "require-dev": {
         "craftcms/ecs": "dev-main",
@@ -60,10 +60,9 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "8.2"
+            "php": "8.5"
         },
         "allow-plugins": {
-            "yiisoft/yii2-composer": true,
             "craftcms/plugin-installer": true
         }
     }

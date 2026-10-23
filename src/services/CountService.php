@@ -12,297 +12,182 @@
 
 namespace cpelementcounter\services;
 
-use craft\base\Component;
-use craft\commerce\elements\Order;
-use craft\commerce\Plugin as CommercePlugin;
-use craft\elements\Asset;
-use craft\elements\Category;
-use craft\elements\Entry;
-use craft\elements\User;
-use verbb\events\elements\Event;
-use verbb\events\Events;
-use verbb\formie\elements\SentNotification;
-use verbb\formie\elements\Submission;
+use CraftCms\Cms\Asset\Elements\Asset;
+use CraftCms\Cms\Cp\RequestedSite;
+use CraftCms\Cms\Edition;
+use CraftCms\Cms\Element\Contracts\ElementInterface;
+use CraftCms\Cms\Element\ElementIndexes;
+use CraftCms\Cms\Element\ElementSources;
+use CraftCms\Cms\Entry\Elements\Entry;
+use CraftCms\Cms\Support\Facades\Sites;
+use CraftCms\Cms\Support\Str;
+use CraftCms\Cms\Support\Url;
+use CraftCms\Cms\User\Elements\User;
+use Illuminate\Support\Facades\Gate;
+
+use function CraftCms\Cms\currentUser;
 
 /**
- * CpElementCounterService Service.
+ * Counts the elements of every source the CP navigation lists.
  *
  * @author    Stefan Friedrich
  *
- * @since     1.0.0
+ * @since     6.0.0
  */
-class CountService extends Component
+class CountService
 {
-    public function getEntriesCount($uids = []): array
-    {
-        if (\count($uids) === 0) {
-            return [];
-        }
-
-        $r = [];
-        $totalCount = 0;
-
-        $currentSiteHandle = \Craft::$app->request->getParam('site') ?? \Craft::$app->getSites()->getCurrentSite()->handle;
-        $site = \Craft::$app->sites->getSiteByHandle($currentSiteHandle, true);
-
-        foreach ($uids as $uid) {
-            $section = \Craft::$app->getEntries()->getSectionByUid($uid);
-            $count = Entry::find()->sectionId($section->id)->siteId($site->id)->limit(null)->status(['disabled', 'enabled'])->count();
-            $r[$uid] = $count;
-            $totalCount += $count;
-        }
-
-        // $count = Entry::find()->limit(null)->status(['disabled', 'enabled'])->count();
-        $r['*'] = $totalCount;
-
-        return $r;
-    }
-
-    public function getCategoriesCount($uids = []): array
-    {
-        if (\count($uids) === 0) {
-            return [];
-        }
-
-        $r = [];
-
-        foreach ($uids as $uid) {
-            $categoryGroup = \Craft::$app->getCategories()->getGroupByUid($uid);
-            $count = Category::find()
-                ->groupId($categoryGroup->id)
-                ->limit(null)
-                ->status(['disabled', 'enabled'])
-                ->count()
-            ;
-            $r[$uid] = $count;
-        }
-
-        return $r;
-    }
-
-    public function getUsersCount($uids = []): array
-    {
-        if (\count($uids) === 0) {
-            return [];
-        }
-
-        $r = [];
-
-        foreach ($uids as $uid) {
-            $group = \Craft::$app->getUserGroups()->getGroupByUid($uid);
-            $count = User::find()->groupId($group->id)->limit(null)->status(null)->count();
-            $r[$uid] = $count;
-        }
-
-        $count = User::find()->limit(null)->status(null)->count();
-        $r['*'] = $count;
-
-        $count = User::find()->admin(true)->limit(null)->status(null)->count();
-        $r['admins'] = $count;
-
-        return $r;
-    }
+    /**
+     * Element types with sources in the CP nav, and the index path their
+     * sources fall back to when they have no path of their own.
+     *
+     * @var array<class-string<ElementInterface>, string>
+     */
+    private const ELEMENT_TYPES = [
+        Entry::class => 'content/entries',
+        Asset::class => 'assets',
+        User::class => 'users',
+    ];
 
     /**
-     * @param string[] $uids
+     * @var array<string, int>|null
+     */
+    private ?array $counts = null;
+
+    public function __construct(
+        private readonly ElementSources $elementSources,
+        private readonly ElementIndexes $elementIndexes,
+        private readonly RequestedSite $requestedSite,
+    ) {}
+
+    /**
+     * Returns the element counts keyed by the CP URL the nav links each source by.
      *
      * @return array<string, int>
      */
-    public function getEventsCount(array $uids = []): array
+    public function getCountsByCpUrl(): array
     {
-        if (\count($uids) === 0) {
-            return [];
+        if ($this->counts !== null) {
+            return $this->counts;
         }
 
-        // Soft dependency on verbb/events — the class can exist without the
-        // plugin being installed, so the instance is what decides.
-        if (!class_exists(Event::class)) {
-            return [];
+        // Shared with every Inertia page, the login screen included.
+        if (currentUser() === null) {
+            return $this->counts = [];
         }
 
-        $events = Events::$plugin;
-        if ($events === null) {
-            return [];
-        }
+        $siteId = $this->siteId();
+        $counts = [];
 
-        $r = [];
-        $totalCount = 0;
-
-        foreach ($uids as $uid) {
-            $eventType = $events->getEventTypes()->getEventTypeByUid($uid);
-            if ($eventType === null) {
+        foreach (self::ELEMENT_TYPES as $elementType => $indexPath) {
+            if (!$this->isInNav($elementType)) {
                 continue;
             }
 
-            $count = (int) Event::find()
-                ->typeId($eventType->id)
-                ->limit(null)
-                ->status(['disabled', 'enabled'])
-                ->count()
-            ;
+            foreach ($this->pages($elementType) as $page) {
+                $pagePath = $page !== null ? 'content/'.Str::slug($page) : $indexPath;
 
-            $r[$uid] = $count;
-            $totalCount += $count;
-        }
+                $sources = $this->elementSources->getSources(
+                    $elementType,
+                    context: ElementSources::CONTEXT_NAVIGATION,
+                    page: $page,
+                    siteId: $siteId,
+                );
 
-        $r['*'] = $totalCount;
+                foreach ($sources as $source) {
+                    if (($source['type'] ?? null) === ElementSources::TYPE_HEADING) {
+                        continue;
+                    }
 
-        return $r;
-    }
+                    if ((string) ($source['key'] ?? '') === '') {
+                        continue;
+                    }
 
-    /**
-     * Counts orders for the cart sources rendered by craft\commerce on the orders index.
-     * Keys are passed in full (e.g. `carts:active:default`, `carts:inactive:default`,
-     * `carts:attempted-payment:default`) so the caller doesn't need to know the
-     * Commerce store handle.
-     *
-     * @param string[] $keys
-     *
-     * @return array<string, int>
-     */
-    public function getCartsCount(array $keys = []): array
-    {
-        if (\count($keys) === 0) {
-            return [];
-        }
-
-        // Soft dependency on craft\commerce — the class can exist without the
-        // plugin being installed, so the instance is what decides.
-        if (!class_exists(Order::class)) {
-            return [];
-        }
-
-        $commerce = CommercePlugin::getInstance();
-        if ($commerce === null) {
-            return [];
-        }
-
-        $r = [];
-        $edge = $commerce->getCarts()->getActiveCartEdgeDuration();
-
-        foreach ($keys as $key) {
-            // Expected shape: "carts:<type>:<storeHandle>"
-            $parts = explode(':', $key);
-            if (\count($parts) !== 3 || $parts[0] !== 'carts') {
-                continue;
+                    $url = Url::cpUrl($this->sourcePath($elementType, $pagePath, $source, $page));
+                    $counts[$url] = $this->count($elementType, $source, $siteId);
+                }
             }
-            [$_, $type, $storeHandle] = $parts;
-
-            $store = $commerce->getStores()->getStoreByHandle($storeHandle);
-            if ($store === null) {
-                continue;
-            }
-
-            $query = Order::find()
-                ->storeId($store->id)
-                ->isCompleted(false)
-                ->limit(null)
-                ->status(null)
-            ;
-
-            $count = match ($type) {
-                'active' => (int) $query->dateUpdated('>= '.$edge)->count(),
-                'inactive' => (int) $query->dateUpdated('< '.$edge)->count(),
-                'attempted-payment' => (int) $query->hasTransactions(true)->count(),
-                default => 0,
-            };
-
-            $r[$key] = $count;
         }
 
-        return $r;
+        return $this->counts = $counts;
     }
 
     /**
-     * Counts Formie submissions per form. `$formIds` are numeric Form IDs that
-     * appear in the sidebar as `data-key="form:<id>"`.
+     * Mirrors the checks the core navigation does before listing an element
+     * type's sources. Entry and asset sources are already limited to the
+     * sections and volumes the user may access.
      *
-     * @param array<int|string> $formIds
-     *
-     * @return array<int|string, int>
+     * @param class-string<ElementInterface> $elementType
      */
-    public function getSubmissionsCount(array $formIds = []): array
+    private function isInNav(string $elementType): bool
     {
-        if (\count($formIds) === 0) {
-            return [];
+        if ($elementType === User::class) {
+            return Edition::get() !== Edition::Solo && Gate::check('viewUsers');
         }
 
-        // Soft dependency on verbb/formie.
-        if (!class_exists(Submission::class)) {
-            return [];
-        }
-
-        $r = [];
-        $totalCount = 0;
-
-        foreach ($formIds as $formId) {
-            $count = (int) Submission::find()
-                ->formId((int) $formId)
-                ->limit(null)
-                ->status(null)
-                ->count()
-            ;
-
-            $r[$formId] = $count;
-            $totalCount += $count;
-        }
-
-        $r['*'] = $totalCount;
-
-        return $r;
+        return true;
     }
 
     /**
-     * Counts Formie sent notifications per form. Same key pattern as submissions.
+     * Entry sources can be split into several nav pages; every other element
+     * type has a single index.
      *
-     * @param array<int|string> $formIds
+     * @param class-string<ElementInterface> $elementType
      *
-     * @return array<int|string, int>
+     * @return list<string|null>
      */
-    public function getSentNotificationsCount(array $formIds = []): array
+    private function pages(string $elementType): array
     {
-        if (\count($formIds) === 0) {
-            return [];
+        if ($elementType !== Entry::class) {
+            return [null];
         }
 
-        if (!class_exists(SentNotification::class)) {
-            return [];
-        }
+        $pages = $this->elementSources->getPages(Entry::class, ElementSources::CONTEXT_NAVIGATION);
 
-        $r = [];
-        $totalCount = 0;
-
-        foreach ($formIds as $formId) {
-            $count = (int) SentNotification::find()
-                ->formId((int) $formId)
-                ->limit(null)
-                ->status(null)
-                ->count()
-            ;
-
-            $r[$formId] = $count;
-            $totalCount += $count;
-        }
-
-        $r['*'] = $totalCount;
-
-        return $r;
+        return $pages->isNotEmpty() ? $pages->values()->all() : [null];
     }
 
-    public function getAssetsCount($folders = []): array
+    /**
+     * Mirrors how the core navigation links a source.
+     *
+     * @param class-string<ElementInterface> $elementType
+     * @param array<string, mixed>           $source
+     */
+    private function sourcePath(string $elementType, string $indexPath, array $source, ?string $page): string
     {
-        if (\count($folders) === 0) {
-            return [];
+        $key = (string) $source['key'];
+
+        return $elementType::sourceCpUri($source, $page)
+            ?? ($key === '*' ? $indexPath : $indexPath.'?source='.rawurlencode($key));
+    }
+
+    /**
+     * Counts the elements of a source the way its index lists them, regardless of status.
+     *
+     * @param class-string<ElementInterface> $elementType
+     * @param array<string, mixed>           $source
+     */
+    private function count(string $elementType, array $source, ?int $siteId): int
+    {
+        $query = $this->elementIndexes->buildQueryState($elementType, $source)['query']
+            ->status(null)
+        ;
+
+        if ($siteId !== null) {
+            $query->siteId($siteId);
         }
 
-        $r = [];
+        return (int) $query->count();
+    }
 
-        foreach ($folders as $folder) {
-            $arr = explode('|', $folder);
-            $count = Asset::find()->folderId($arr[\count($arr) - 1])->includeSubfolders(true)->limit(null)->count();
-            $r[$folder] = $count;
+    /**
+     * The site the CP is working with, or `null` on a single-site install.
+     */
+    private function siteId(): ?int
+    {
+        if (!Sites::isMultiSite()) {
+            return null;
         }
 
-        return $r;
+        return $this->requestedSite->get()?->id;
     }
 }
