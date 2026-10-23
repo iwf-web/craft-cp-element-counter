@@ -1,20 +1,21 @@
 .cpelementcount-pill {
-    background: rgba(0, 0, 0, 0.1);
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    min-width: 20px;
     height: 20px;
-    padding: 0 9px;
+    padding: 0 7px;
+    box-sizing: border-box;
+    justify-content: center;
     border-radius: 10px;
-    font-size: 10px;
-    line-height: 20px;
-    position: relative;
-    right: -8px;
+    background: var(--c-color-neutral-fill-quiet, rgba(0, 0, 0, 0.08));
+    color: var(--c-color-neutral-on-quiet, inherit);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
     opacity: 0.8;
 }
 
-a:hover .cpelementcount-pill {
+craft-nav-item:hover > .cpelementcount-pill,
+craft-nav-item[current] > .cpelementcount-pill {
     opacity: 1;
-}
-a.sel  .cpelementcount-pill {
-    color: rgb(255,255,255);
-    opacity: 0.9;
 }

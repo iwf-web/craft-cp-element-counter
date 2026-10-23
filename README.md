@@ -1,10 +1,12 @@
-# Control Panel Element Counter plugin for Craft CMS 5.x
+# Control Panel Element Counter plugin for Craft CMS 6.x
 
 [![License](https://img.shields.io/github/license/iwf-web/craft-cp-element-counter)][license]
 
 This plugin brings back the CP Element Count plugin, yeah!
 
-Plugin shows you the number of elements - Entries, Assets, Categories and Users directly in the control panel.
+Plugin shows you the number of elements - Entries, Assets and Users - next to each source in the control panel navigation.
+
+Looking for Craft CMS 5? Use the 5.x releases of this plugin.
 
 ![Screenshot](https://raw.githubusercontent.com/iwf-web/craft-cp-element-counter/refs/heads/main/resources/screenshot.png)
 
@@ -14,8 +16,8 @@ Brought to you by [IWF](https://www.iwf.ch/web-solutions) with a big thank you t
 
 ### Prerequisites
 
-- PHP 8.2 or higher
-- Craft CMS 5.0.0 or later
+- PHP 8.5 or higher
+- Craft CMS 6.0.0 or later
 
 ### Installation
 
@@ -37,7 +39,7 @@ cd /path/to/my-project.test
 composer require iwf/craft-control-panel-element-counter
 
 # tell Craft to install the plugin
-./craft plugin/install control-panel-element-counter
+php artisan craft:plugin:install control-panel-element-counter
 ```
 
 ## Contributing

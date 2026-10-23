@@ -28,8 +28,8 @@
         "rss": "https://github.com/iwf-web/craft-cp-element-counter/releases.atom"
     },
     "require": {
-        "php": ">=8.2",
-        "craftcms/cms": "^5.0.0"
+        "php": "^8.5",
+        "craftcms/cms": "^6.0.0-alpha.20"
     },
     "require-dev": {
         "craftcms/ecs": "dev-main",
@@ -37,6 +37,8 @@
         "iwf-web/php-coding-standard": "^1.0",
         "phpstan/phpstan": "^2.1"
     },
+    "minimum-stability": "alpha",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "cpelementcounter\\": "src/"
@@ -60,10 +62,9 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "8.2"
+            "php": "8.5"
         },
         "allow-plugins": {
-            "yiisoft/yii2-composer": true,
             "craftcms/plugin-installer": true
         }
     }

@@ -12,74 +12,45 @@
 
 namespace cpelementcounter;
 
-use cpelementcounter\assetbundles\CpElementCounterAssetBundle;
 use cpelementcounter\services\CountService;
-use craft\base\Plugin;
-use craft\events\TemplateEvent;
-use craft\services\Plugins;
-use craft\web\View;
-use yii\base\Event;
-use yii\base\InvalidConfigException;
+use CraftCms\Cms\Plugin\Plugin;
+use Inertia\Inertia;
 
 /**
  * Control Panel Element Counter plugin.
  *
- * @method static CpElementCounter getInstance()
+ * Shows the number of entries, assets and users per source next to the
+ * source in the control panel navigation.
  *
  * @author IWF <s.friedrich@iwf.ch>
  * @author André Elvan (thanks!)
  */
 class CpElementCounter extends Plugin
 {
-    // Static Properties
-    // =========================================================================
-
-    /**
-     * Static property that is an instance of this plugin class so that it can be accessed via
-     * CpElementCounter::$plugin.
-     */
-    public static CpElementCounter $plugin;
-
     public string $schemaVersion = '1.0.0';
 
-    public function init(): void
+    /**
+     * @var array<string, string>
+     */
+    protected array $scripts = [
+        __DIR__.'/resources/cpelementcounter.js' => 'cpelementcounter.js',
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $styles = [
+        __DIR__.'/resources/cpelementcounter.css' => 'cpelementcounter.css',
+    ];
+
+    public function register(): void
     {
-        parent::init();
-        self::$plugin = $this;
-
-        \Craft::setAlias('@cpelementcounter', __DIR__);
-
-        // Register services
-        $this->setComponents([
-            'count' => CountService::class,
-        ]);
-
-        if (\Craft::$app->getRequest()->getIsCpRequest()) {
-            Event::on(
-                Plugins::class,
-                Plugins::EVENT_AFTER_LOAD_PLUGINS,
-                function (): void {
-                    $this->addTemplateEvents();
-                },
-            );
-        }
+        $this->app->singleton(CountService::class);
     }
 
-    private function addTemplateEvents(): void
+    public function boot(): void
     {
-        // Register CP Asset bundle
-        Event::on(View::class,
-            View::EVENT_BEFORE_RENDER_TEMPLATE,
-            static function (TemplateEvent $event): void {
-                try {
-                    \Craft::$app->getView()->registerAssetBundle(CpElementCounterAssetBundle::class);
-                } catch (InvalidConfigException $e) {
-                    \Craft::error(
-                        'Error registering AssetBundle - '.$e->getMessage(),
-                        __METHOD__,
-                    );
-                }
-            },
-        );
+        // Lazy, so the counts are only queried when a CP page actually renders.
+        Inertia::share('cpElementCounter', fn (): object => (object) $this->app->make(CountService::class)->getCountsByCpUrl());
     }
 }
