@@ -28,7 +28,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.4"
+          php-version: "8.5"
           coverage: none
 
       - name: Get Composer cache directory
@@ -79,7 +79,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ["8.2", "8.3", "8.4", "8.5", "8.6"]
+        php-version: ["8.5", "8.6"]
     steps:
       - name: Checkout
         uses: actions/checkout@v7

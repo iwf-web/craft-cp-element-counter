@@ -29,7 +29,7 @@ $header = <<<EOF
 
 // https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/doc/ruleSets/index.rst
 // https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/doc/rules/index.rst
-return (new Config())
+return new Config()
     ->registerCustomRuleSets([
         new IWFWebStandardSet(),
         new IWFWebStandardRiskySet(),
